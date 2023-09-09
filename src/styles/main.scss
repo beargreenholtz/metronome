@@ -1,0 +1,566 @@
+/* Theming */
+
+/**
+* SASS theming technique from this article: 
+* https://medium.com/@dmitriy.borodiy/easy-color-theming-with-scss-bc38fd5734d1
+*/
+
+$themes: (
+	light: (col-background: #f0f0f0,
+		col-light: #fff,
+		col-dark: #ccc,
+		col-text: #333,
+		col-text-hover: #666,
+		col-led: orange),
+	dark: (col-background: #424242,
+		col-light: #595959,
+		col-dark: #393939,
+		col-text: #fff,
+		col-text-hover: #ccc,
+		col-led: orange)
+);
+
+@mixin themify($themes: $themes) {
+	@each $theme, $map in $themes {
+		.theme-#{$theme} & {
+			$theme-map: (
+				) !global;
+
+			@each $key, $submap in $map {
+				$value: map-get(map-get($themes, $theme), '#{$key}'
+				);
+			$theme-map: map-merge($theme-map, ($key: $value)) !global;
+		}
+
+		@content;
+		$theme-map: null !global;
+	}
+}
+}
+
+@function themed($key) {
+	@return map-get($theme-map, $key);
+}
+
+/* End Theming */
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+}
+
+.app-wrapper {
+	padding: 1rem;
+	transition: .2s;
+
+	@include themify($themes) {
+		background-color: themed('col-background');
+		color: themed('col-text');
+	}
+}
+
+a {
+	transition: .3s;
+	text-decoration: none;
+
+	@include themify($themes) {
+		color: themed('col-text');
+	}
+
+	&:visited {
+		@include themify($themes) {
+			color: themed('col-text');
+		}
+	}
+
+	&:hover {
+		@include themify($themes) {
+			color: themed('col-text-hover');
+		}
+	}
+}
+
+.navbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+button {
+	cursor: pointer;
+	border: 0;
+	padding: .5rem;
+	transition: .2s;
+	border-radius: 5px;
+
+	@include themify($themes) {
+		background-color: themed('col-background');
+		box-shadow: -3px -3px 5px themed('col-light'), 3px 3px 5px themed('col-dark');
+		color: themed('col-text');
+	}
+
+	&.btn-circle {
+		border-radius: 50%;
+		display: grid;
+		place-content: center;
+		width: 3rem;
+		height: 3rem;
+		min-width: 3rem;
+
+		&.large {
+			height: 6rem;
+			width: 6rem;
+			font-size: 2rem;
+		}
+	}
+
+	&:hover {
+		@include themify($themes) {
+			background-color: themed('col-background');
+			box-shadow: -1px -1px 3px themed('col-light'), 1px 1px 3px themed('col-dark');
+		}
+	}
+}
+
+.app {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: calc(100vh - 4rem);
+	max-width: 768px;
+	margin: auto;
+}
+
+.tempo-input-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 3rem 0 1rem 0;
+
+	.tempo-label {
+		span:first-child {
+			font-size: 4rem;
+
+		}
+	}
+}
+
+.play-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 2rem 0;
+}
+
+.visualizer {
+	height: 100%;
+	display: flex;
+	align-items: center;
+
+	canvas {
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.settings-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.select-wrapper {
+	position: relative;
+	flex: 1;
+	min-width: 5.5rem;
+
+	&:nth-child(2) {
+		padding-left: 2rem;
+		min-width: 7.5rem;
+	}
+
+	select {
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		position: relative;
+		cursor: pointer;
+		transition: .2s;
+
+		border: 0;
+		border-radius: 5px;
+		padding: 1rem;
+		width: 100%;
+
+		@include themify($themes) {
+			background-color: themed('col-background');
+			box-shadow: -3px -3px 5px themed('col-light'), 3px 3px 5px themed('col-dark');
+			color: themed('col-text');
+
+		}
+
+		&:hover {
+			@include themify($themes) {
+				background-color: themed('col-background');
+				box-shadow: -1px -1px 3px themed('col-light'), 1px 1px 3px themed('col-dark');
+			}
+		}
+	}
+
+	&:after {
+		content: "";
+		position: absolute;
+		right: 1rem;
+		top: 50%;
+		transform: translateY(-50%);
+
+		border-right: 5px solid transparent;
+		border-left: 5px solid transparent;
+
+		@include themify($themes) {
+			border-top: 5px solid themed('col-text');
+		}
+	}
+}
+
+/* Range Slider */
+
+input[type=range] {
+	width: 100%;
+	background: transparent;
+	margin: 1rem 0 2rem 0;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+}
+
+input[type=range]:focus {
+	outline: none;
+}
+
+input[type=range]::-ms-track {
+	width: 100%;
+	cursor: pointer;
+	background: transparent;
+	border-color: transparent;
+	color: transparent;
+	border-radius: 5px;
+
+	@include themify($themes) {
+		background-color: themed('col-background');
+		box-shadow: -3px -3px 5px themed('col-light') inset, 3px 3px 5px themed('col-dark') inset;
+	}
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 1rem;
+	cursor: pointer;
+	border-radius: 5px;
+
+	@include themify($themes) {
+		background-color: themed('col-background');
+		box-shadow: -3px -3px 5px themed('col-light') inset, 3px 3px 5px themed('col-dark') inset;
+	}
+}
+
+input[type=range]::-moz-range-track {
+	width: 100%;
+	height: 1rem;
+	cursor: pointer;
+	border-radius: 5px;
+
+	@include themify($themes) {
+		background-color: themed('col-background');
+		box-shadow: -3px -3px 5px themed('col-light') inset, 3px 3px 5px themed('col-dark') inset;
+	}
+}
+
+input[type=range]::-ms-track {
+	width: 100%;
+	height: 1rem;
+	cursor: pointer;
+	border-color: transparent;
+	border-width: 0 0;
+	border-radius: 5px;
+
+	@include themify($themes) {
+		background-color: themed('col-background');
+		box-shadow: -3px -3px 5px themed('col-light') inset, 3px 3px 5px themed('col-dark') inset;
+	}
+}
+
+input[type=range]::-ms-fill-lower {
+	border: 0;
+	border-radius: 0;
+
+	@include themify($themes) {
+		background-color: themed('col-background');
+	}
+}
+
+input[type=range]:focus::-ms-fill-lower {
+	@include themify($themes) {
+		background: themed('col-background');
+	}
+}
+
+input[type=range]::-ms-fill-upper {
+	border: 0;
+	border-radius: 0px;
+
+	@include themify($themes) {
+		background-color: themed('col-background');
+	}
+}
+
+input[type=range]:focus::-ms-fill-upper {
+	@include themify($themes) {
+		background: themed('col-background');
+	}
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	border: 0;
+	width: 3rem;
+	height: 1.5rem;
+	border-radius: 1rem;
+	cursor: pointer;
+	margin-top: -3px;
+
+	@include themify($themes) {
+		background: themed('col-text');
+		box-shadow: -3px -3px 5px themed('col-light'), 3px 3px 5px themed('col-dark');
+	}
+}
+
+input[type=range]::-moz-range-thumb {
+	border: 0;
+	width: 3rem;
+	height: 1.5rem;
+	border-radius: 1rem;
+	margin-top: -3px;
+
+	@include themify($themes) {
+		background: themed('col-text');
+		box-shadow: -3px -3px 5px themed('col-light'), 3px 3px 5px themed('col-dark');
+	}
+}
+
+input[type=range]::-ms-thumb {
+	border: 0;
+	width: 3rem;
+	height: 1.5rem;
+	border-radius: 1rem;
+	margin-top: -3px;
+	cursor: pointer;
+
+	@include themify($themes) {
+		background: themed('col-text');
+		box-shadow: -3px -3px 5px themed('col-light'), 3px 3px 5px themed('col-dark');
+	}
+}
+
+/* End Range Slider */
+
+footer {
+	width: 100%;
+	text-align: center;
+	margin-top: 3rem;
+}
+
+@media only screen and (min-width: 321px) {
+	.app-wrapper {
+		padding: 2rem;
+	}
+}
+
+@media only screen and (min-width: 769px) {
+
+	.app-wrapper {
+		padding: 5rem 0;
+
+		@include themify($themes) {
+			background-color: themed('col-dark');
+		}
+	}
+
+	.app {
+		min-height: calc(100vh - 10rem);
+		max-width: 480px;
+		padding: 2rem;
+		border-radius: 12px;
+
+		@include themify($themes) {
+			background-color: themed('col-background');
+		}
+	}
+}
+
+
+.metronomeContainer {
+
+	width: 300px;
+	background-color: #333;
+	padding: 70px;
+	position: absolute;
+	border-radius: 8px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
+	&:before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		border-radius: 8px;
+		background-color: rgba(255, 255, 255, 0.04);
+		content: ' ';
+		//   animation-duration: ${1 / (bpm / 60 / 1000)}ms;
+		animation-iteration-count: infinite;
+		animation-direction: infinite;
+		animation-timing-function: ease-in-out;
+
+		@keyframes blink {
+
+			0%,
+			40%,
+			60%,
+			100% {
+				opacity: 0;
+			}
+
+			50% {
+				opacity: 1;
+			}
+		}
+	}
+
+	&:after {
+		//   animation-duration: ${1 / (bpm / 60 / 1000)}ms * ${beatsPerMeasure};
+		animation-name: text;
+		animation-iteration-count: infinite;
+		animation-timing-function: step-end;
+		//   animation-delay: ${1 / (bpm / 60 / 1000)}ms / 2;
+		content: '';
+		color: #999;
+		position: absolute;
+		left: 50%;
+		top: 100%;
+		transform: translate(-50%, 10px);
+		font-family: Helvetica;
+
+	}
+
+
+
+	&:after {
+		//   animation-duration: ${1 / (bpm / 60 / 1000)}ms * ${beatsPerMeasure};
+		animation-name: text;
+		animation-iteration-count: infinite;
+		animation-timing-function: step-end;
+		//   animation-delay: ${1 / (bpm / 60 / 1000)}ms / 2;
+		content: '';
+		color: #999;
+		position: absolute;
+		left: 50%;
+		top: 100%;
+		transform: translate(-50%, 10px);
+		font-family: Helvetica;
+
+	}
+
+	.metronomeViz {
+		position: relative;
+
+
+		.metronomeLine {
+			height: 1px;
+			background: linear-gradient(90deg,
+					rgba(255, 255, 255, 0),
+					rgba(255, 255, 255, 1),
+					rgba(255, 255, 255, 0));
+			opacity: 0.3;
+			position: relative;
+
+			&:before {
+				content: '';
+				height: 20px;
+				width: 1px;
+				position: absolute;
+				left: 50%;
+				top: -9px;
+				background-color: #fff;
+				opacity: 0.3;
+			}
+		}
+
+		.metronomeIndicator {
+			height: 11px;
+			width: 11px;
+
+			background: #f33;
+			border: #000 1px solid;
+			box-shadow: inset 5px 5px 3px #ec9, 4px 2px 10px 3px rgba(0, 0, 0, 0.3);
+
+			border-top-left-radius: 50%;
+			border-top-right-radius: 50% 100%;
+			border-bottom-right-radius: 5px;
+			border-bottom-left-radius: 100% 50%;
+
+			transform: rotate(45deg);
+
+			padding: 10px;
+
+			width: 15px;
+			height: 15px;
+			background-color: #fd6a02;
+			margin-left: -5px;
+			margin-top: -10px;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			// animation-duration: ${1 / (bpm / 60 / 1000)}ms;
+			animation-name: metronome;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
+			animation-timing-function: ease-in-out;
+
+			@keyframes metronome {
+				0% {
+					transform: translateX(-150px);
+				}
+
+				100% {
+					transform: translateX(150px);
+				}
+
+				0%,
+				100% {
+					opacity: 0.5;
+				}
+
+				40%,
+				60% {
+					opacity: 0.9;
+				}
+
+				50% {
+					opacity: 1;
+				}
+			}
+		}
+	}
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+}
